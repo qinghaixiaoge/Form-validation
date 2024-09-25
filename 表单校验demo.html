@@ -220,8 +220,14 @@
             const parentDom = inputDom.parentElement
             // 若是还没触发change事件，直接return
             if (!parentDom || ((inputDom.tagName === "INPUT" && inputDom.getAttribute("data-change") !== "true"))) return
+            // 处理file错误内容发送改变
+            const error = parentDom.querySelector(".error")
+            if (error && (message !== error.innerText)) {
+                error.innerText = message
+                return
+            }
             // 处理重复创建错误元素
-            if (parentDom.querySelector(".error")) return
+            if (error) return
             const errorDom = document.createElement("div")
             errorDom.classList.add("error")
             errorDom.style.color = "red"
@@ -276,7 +282,7 @@
                 loginPwdDom.setAttribute("data-change", true)
                 createErrorDom(loginPwdDom, "密码必须为 123456")
             }
-            // 处理文件的校验规则，只判断文件是否上传
+            
             if (fileDom.value === "") {
                 fileDom.setAttribute("data-change", true)
                 createErrorDom(fileDom, "请选择文件")
@@ -320,8 +326,6 @@
         }
 
         reset.onclick = function (e) {
-            console.log(fileDom.value);
-
             fileDom.value = ""
             imgDom.src = "./logo.png"
             inputs.forEach(input => {
@@ -338,6 +342,8 @@
         }
 
         // file跟img基本不挂钩，需要解决的是file校验失败，img是如何处理的
+        console.log(fileDom);
+        
         fileDom.onchange = function (e) {
             const file = this.files[0]
             this.setAttribute("data-change", true)
