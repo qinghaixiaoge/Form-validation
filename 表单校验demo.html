@@ -352,7 +352,7 @@
                 return
             }
             
-            if (file.size >= 1024 * 1) {
+            if (file.size >= 1024 * 1024 * 2) {
                 createErrorDom(this, "文件不能超过2MB")
                 imgDom.src = "./logo.png"
                 this.value = "";
