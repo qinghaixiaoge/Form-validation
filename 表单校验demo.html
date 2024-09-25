@@ -342,7 +342,6 @@
         }
 
         // file跟img基本不挂钩，需要解决的是file校验失败，img是如何处理的
-        console.log(fileDom);
         
         fileDom.onchange = function (e) {
             const file = this.files[0]
@@ -352,14 +351,17 @@
                 imgDom.src = "./logo.png"
                 return
             }
-            if (file.size >= 1024 * 1024 * 2) {
+            
+            if (file.size >= 1024 * 1) {
                 createErrorDom(this, "文件不能超过2MB")
                 imgDom.src = "./logo.png"
+                this.value = "";
                 return
             }
             if (!["image/jpeg", "image/png"].includes(file.type)) {
                 createErrorDom(this, "不支持该文件类型")
                 imgDom.src = "./logo.png"
+                this.value = "";
                 return
             }
             removeErrorDom(this)
