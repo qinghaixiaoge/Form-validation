@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>表单验证</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            list-style: none;
+        }
+
+        .container {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container ul {
+            padding: 30px;
+            width: 350px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+            border-radius: 10px;
+        }
+
+        li {
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #8a4fe3;
+        }
+
+        .message {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 0, 0, .2);
+        }
+
+        button {
+            text-align: center;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            background-color: #8a4fe3;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #b66dff;
+        }
+
+        img {
+            width: 50px;
+            height: 50px;
+            display: block;
+        }
+
+        input[type=file] {
+            display: none;
+        }
+
+        .input-group {
+            display: flex;
+        }
+
+        .input-group .input-label {
+            width: 60px;
+            flex-shrink: 0;
+            text-align: right;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .input-group .input-label label {
+            display: inline-flex;
+            align-items: center;
+            height: 37px;
+            max-width: 100%;
+        }
+
+        .input-message {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .input-message .input-checkbox{
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .input-message .input-checkbox label{
+            margin-right: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <form>
+            <ul>
+                <li>
+                    <h2>大屏项目</h2>
+                </li>
+                <li>
+                    <div>
+                        <div class="input-group">
+                            <div class="input-label">
+                                <label for="loginId">账号：</label>
+                            </div>
+                            <div class="input-message">
+                                <input type="text" name="loginId" placeholder="账号" class="message" id="loginId"></input>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="input-group">
+                        <div class="input-label">
+                            <label for="loginPwd">密码：</label>
+                        </div>
+                        <div class="input-message">
+                            <input type="text" name="loginPwd" placeholder="密码" class="message" id="loginPwd">
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="input-group">
+                        <div class="input-label">
+                            <label for="avatar">头像：</label>
+                        </div>
+                        <div class="input-message">
+                            <img src="./logo.png">
+                            <input type="file" name="avatar" id="avatar" class="message">
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="input-group">
+                        <div class="input-label">
+                            性别：
+                        </div>
+                        <div class="input-message">
+                            <div>
+                                <label>
+                                    <input type="radio" name="sex" id="sex" value="boy" checked>男
+                                </label>
+                                <label>
+                                    <input type="radio" name="sex" id="sex" value="girl">女
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="input-group">
+                        <div class="input-label">
+                            爱好：
+                        </div>
+                        <div class="input-message">
+                            <div class="input-checkbox">
+                                <label>
+                                    <input type="checkbox" name="hobby" id="hobby" value="唱歌">唱歌
+                                </label>
+                                <label>
+                                    <input type="checkbox" name="hobby" id="hobby" value="跳舞">跳舞
+                                </label>
+                                <label>
+                                    <input type="checkbox" name="hobby" id="hobby" value="唱歌">唱歌
+                                </label>
+                                <label>
+                                    <input type="checkbox" name="hobby" id="hobby" value="跳舞">跳舞
+                                </label>
+                                <label>
+                                    <input type="checkbox" name="hobby" id="hobby" value="唱歌">唱歌
+                                </label>
+                                <label>
+                                    <input type="checkbox" name="hobby" id="hobby" value="跳舞">跳舞
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="input-group">
+                        <div class="input-label">
+                            城市：
+                        </div>
+                        <div class="input-message">
+                            <div class="input-select">
+                                <select name="city" id="city">
+                                    <option value="" checked>===请选择城市====</option>
+                                    <option value="北京">北京</option>
+                                    <option value="广州">广州</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <button type="submit">注册</button>
+                </li>
+                <li>
+                    <button type="reset" id="reset">重置</button>
+                </li>
+            </ul>
+        </form>
+    </div>
+    <script>
+        function createErrorDom(inputDom, message) {
+            const parentDom = inputDom.parentElement
+            // 若是还没触发change事件，直接return
+            if (!parentDom || ((inputDom.tagName === "INPUT" && inputDom.getAttribute("data-change") !== "true"))) return
+            // 处理重复创建错误元素
+            if (parentDom.querySelector(".error")) return
+            const errorDom = document.createElement("div")
+            errorDom.classList.add("error")
+            errorDom.style.color = "red"
+            errorDom.style.fontSize = "15px"
+            errorDom.style.color = "red"
+            errorDom.style.display = "flex"
+            errorDom.style.flexWrap = "nowrap"
+            errorDom.textContent = message
+            const marginBottomDom = document.createElement("div")
+            marginBottomDom.classList.add("margin-bottom")
+            marginBottomDom.style.marginBottom = "-20px"
+            parentDom.appendChild(errorDom)
+            // console.log(parentDom, parentDom.parentElement.parentElement);
+            parentDom.parentElement.parentElement && parentDom.parentElement.parentElement.appendChild(marginBottomDom)
+        }
+
+        function removeErrorDom(inputDom) {
+            const parentDom = inputDom.parentElement
+            if (!parentDom) return
+            const errorDom = parentDom.querySelector(".error")
+            const marginBottomDom = parentDom.parentElement.parentElement && parentDom.parentElement.parentElement.querySelector(".margin-bottom")
+            errorDom && errorDom.remove()
+            marginBottomDom && marginBottomDom.remove()
+        }
+    </script>
+
+    <script>
+        // 临界情况  只要不触发change 默认都是正常的 【 聚焦保持绿色 失焦保持默认颜色】
+        // 离开时 通过校验取消样式  不通过保持样式
+        const btnDom = document.querySelector("button")
+        const formDom = document.querySelector("form")
+        const fileDom = document.querySelector("input[type=file]")
+        const imgDom = document.querySelector("img")
+        const inputs = document.querySelectorAll('.message');
+        const hobbies = document.querySelectorAll("input[name=hobby]");
+        const inputCheckBox = document.querySelector(".input-checkbox")
+        const inputSelect = document.querySelector(".input-select")
+        const selectDom = document.querySelector("select")
+        const loginIdDom = document.querySelector("input[name=loginId]")
+        const loginPwdDom = document.querySelector("input[name=loginPwd]")
+
+        btnDom.onclick = function (e) {
+            e.preventDefault()
+            // 处理input的校验规则
+            if (loginIdDom.value !== "admin") {
+                loginIdDom.style.border = "1px solid red"
+                loginIdDom.setAttribute("data-change", true)
+                createErrorDom(loginIdDom, "账号必须为 admin")
+            }
+            if (loginPwdDom.value !== "123456") {
+                loginPwdDom.style.border = "1px solid red"
+                loginPwdDom.setAttribute("data-change", true)
+                createErrorDom(loginPwdDom, "密码必须为 123456")
+            }
+            // 处理文件的校验规则，只判断文件是否上传
+            if (fileDom.value === "") {
+                fileDom.setAttribute("data-change", true)
+                createErrorDom(fileDom, "请选择文件")
+            }
+
+            // 处理select的校验规则
+            const optionDom = selectDom.options[selectDom.selectedIndex];
+            // console.log(`Selected Value: ${optionDom.value}, Selected Text: ${optionDom.text}`);
+            if (optionDom.value === "") {
+                createErrorDom(inputSelect, "请选择城市")
+            } else {
+                removeErrorDom(inputSelect)
+            }
+            // 处理checkbox的校验规则
+            let hobbySelected = false
+            for (const hobby of hobbies) {
+                if (hobby.checked) {
+                    hobbySelected = true
+                    break
+                }
+            }
+            if (!hobbySelected) {
+                createErrorDom(inputCheckBox, "请至少选择一个爱好")
+                return
+            } else {
+                removeErrorDom(inputCheckBox)
+            }
+
+
+            const formData = new FormData(formDom)
+            const json = {}
+            for (const [key, value] of formData) {
+                if (json[key]) {
+                    json[key] += '|' + value
+
+                } else {
+                    json[key] = value
+                }
+            }
+            console.log(json);
+        }
+
+        reset.onclick = function (e) {
+            console.log(fileDom.value);
+
+            fileDom.value = ""
+            imgDom.src = "./logo.png"
+            inputs.forEach(input => {
+                // 删除报错信息和间距
+                removeErrorDom(input);
+                // 重置 data-change 和 data-success 属性
+                input.removeAttribute("data-change");
+                input.removeAttribute("data-success");
+                // 重置输入框的边框颜色
+                input.style.border = "1px solid #ccc";
+            });
+            removeErrorDom(inputSelect)
+            removeErrorDom(inputCheckBox)
+        }
+
+        // file跟img基本不挂钩，需要解决的是file校验失败，img是如何处理的
+        fileDom.onchange = function (e) {
+            const file = this.files[0]
+            this.setAttribute("data-change", true)
+            if (!file) {
+                createErrorDom(this, "请选择文件")
+                imgDom.src = "./logo.png"
+                return
+            }
+            if (file.size >= 1024 * 1024 * 2) {
+                createErrorDom(this, "文件不能超过2MB")
+                imgDom.src = "./logo.png"
+                return
+            }
+            if (!["image/jpeg", "image/png"].includes(file.type)) {
+                createErrorDom(this, "不支持该文件类型")
+                imgDom.src = "./logo.png"
+                return
+            }
+            removeErrorDom(this)
+            const fileReader = new FileReader()
+            fileReader.onload = function () {
+                imgDom.src = this.result
+            }
+            fileReader.readAsDataURL(file)
+        }
+
+
+        // input事件触发太频繁了不适合，用户体验不佳
+        /* loginIdDom.oninput = function (e) {
+            
+        } */
+
+
+        // 失焦内部并改变
+        loginIdDom.onchange = function (e) {
+            this.setAttribute("data-change", true)
+        }
+        loginPwdDom.onchange = function (e) {
+            this.setAttribute("data-change", true)
+        }
+        // 处理select的选中事件
+        selectDom.onchange = function (e) {
+            const optionDom = this.options[this.selectedIndex]
+            if (optionDom.value === "") {
+                createErrorDom(inputSelect, "请选择城市")
+            } else {
+                removeErrorDom(inputSelect)
+            }
+        }
+        // 实时处理checkbox的选中事件
+        hobbies.forEach(checkbox => {
+            checkbox.addEventListener('change', validateCheckboxes);
+        });
+        function validateCheckboxes() {
+            let isChecked = false;
+            hobbies.forEach(checkbox => {
+                if (checkbox.checked) {
+                    isChecked = true;
+                }
+            });
+            if (!isChecked) {
+                createErrorDom(inputCheckBox, "请至少选择一个爱好")
+            } else {
+                removeErrorDom(inputCheckBox)
+            }
+        }
+
+
+        // 聚焦处理
+        loginIdDom.onfocus = function (e) {
+            if (this.getAttribute("data-change") !== "true") {
+                this.style.border = "1px solid #00a854"
+                return
+            }
+            if (this.getAttribute("data-success") === "true") {
+                this.style.border = "1px solid #00a854"
+            } else {
+                this.style.border = "1px solid red"
+            }
+        }
+        loginPwdDom.onfocus = function (e) {
+            if (this.getAttribute("data-change") !== "true") {
+                this.style.border = "1px solid #00a854"
+                return
+            }
+            if (this.getAttribute("data-success") === "true") {
+                this.style.border = "1px solid #00a854"
+            } else {
+                this.style.border = "1px solid red"
+            }
+        }
+
+        // 校验规则
+        const validateLoginId = function (val) {
+            return val === "admin" ? true : false
+        }
+        const validateLoginPwd = function (val) {
+            return val === "123456" ? true : false
+        }
+        // 失焦处理
+        loginIdDom.onblur = function (e) {
+            if (this.getAttribute("data-change") !== "true") {
+                this.style.border = "1px solid #ccc"
+                return
+            }
+            if (validateLoginId(this.value)) {
+                this.setAttribute("data-success", true)
+                this.style.border = "1px solid #ccc"
+                removeErrorDom(this)
+            } else {
+                this.setAttribute("data-success", false)
+                this.style.border = "1px solid red"
+                createErrorDom(this, "账号必须为 admin")
+            }
+        }
+        loginPwdDom.onblur = function (e) {
+            if (this.getAttribute("data-change") !== "true") {
+                this.style.border = "1px solid #ccc"
+                return
+            }
+            if (validateLoginPwd(this.value)) {
+                this.setAttribute("data-success", true)
+                this.style.border = "1px solid #ccc"
+                removeErrorDom(this)
+            } else {
+                this.setAttribute("data-success", false)
+                this.style.border = "1px solid red"
+                createErrorDom(this, "密码必须为 123456")
+            }
+        }
+    </script>
+</body>
+
+</html>
