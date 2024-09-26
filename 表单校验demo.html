@@ -352,14 +352,15 @@
                 return
             }
             
-            if (file.size >= 1024 * 1024 * 2) {
-                createErrorDom(this, "文件不能超过2MB")
+            if (!["image/jpeg", "image/png"].includes(file.type)) {
+                createErrorDom(this, "不支持该文件类型")
                 imgDom.src = "./logo.png"
                 this.value = "";
                 return
             }
-            if (!["image/jpeg", "image/png"].includes(file.type)) {
-                createErrorDom(this, "不支持该文件类型")
+            
+            if (file.size >= 1024 * 1024 * 2) {
+                createErrorDom(this, "文件不能超过2MB")
                 imgDom.src = "./logo.png"
                 this.value = "";
                 return
