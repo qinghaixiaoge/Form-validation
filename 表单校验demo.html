@@ -44,7 +44,8 @@
             box-shadow: 0 0 5px rgba(0, 0, 0, .2);
         }
 
-        button {
+        .submit-button,
+        .reset-button {
             text-align: center;
             width: 100%;
             padding: 10px;
@@ -55,15 +56,119 @@
             cursor: pointer;
         }
 
-        button:hover {
+        .submit-button:hover,
+        .reset-button:hover {
             background-color: #b66dff;
         }
 
         img {
+            width: 100%;
+            height: 30px;
+            background-size: contain;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        .avatar {
             width: 50px;
             height: 50px;
+            border: 1px dotted;
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .avatar .select,
+        .avatar .process,
+        .avatar .upload {
+            display: none;
+        }
+
+        .avatar.upload img,
+        .avatar.process img {
+            display: block;
+            z-index: 1;
+        }
+
+        .avatar.select:hover {
+            border: 1px dotted #00a854;
+        }
+
+        .avatar.select .select.active {
+            background-color: rgba(0, 0, 0, .1);
+        }
+
+        .avatar.upload .upload {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .avatar.upload .upload button {
+            width: 15px;
+            height: 15px;
+            position: absolute;
+            right: 0;
+            top: 0;
+            text-align: center;
+            line-height: 15px;
+            z-index: 2;
+            cursor: pointer;
+            border: none;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .avatar.process .process {
+            display: block;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            background-color: rgba(0, 0, 0, .1);
+        }
+
+        .avatar.process .process .title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+        }
+
+        .avatar.select .select {
+            width: 100%;
+            height: 100%;
             display: block;
         }
+
+        .avatar.select .select::before {
+            content: '';
+            position: absolute;
+            background: #ccc;
+            width: 70%;
+            height: 8%;
+            border-radius: 10px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .avatar.select .select::after {
+            content: '';
+            position: absolute;
+            background: #ccc;
+            width: 8%;
+            height: 70%;
+            border-radius: 10px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+
 
         input[type=file] {
             display: none;
@@ -93,11 +198,13 @@
             display: flex;
             flex-direction: column;
         }
-        .input-message .input-checkbox{
+
+        .input-message .input-checkbox {
             display: flex;
             flex-wrap: wrap;
         }
-        .input-message .input-checkbox label{
+
+        .input-message .input-checkbox label {
             margin-right: 5px;
         }
     </style>
@@ -138,8 +245,17 @@
                             <label for="avatar">头像：</label>
                         </div>
                         <div class="input-message">
-                            <img src="./logo.png">
-                            <input type="file" name="avatar" id="avatar" class="message">
+                            <div class="avatar select">
+                                <input type="file" name="avatar" id="avatar" class="message">
+                                <div class="select"></div>
+                                <div class="process">
+                                    <div class="title">上</div>
+                                </div>
+                                <div class="upload">
+                                    <button>X</button>
+                                </div>
+                                <img src="./logo.png" alt="">
+                            </div>
                         </div>
                     </div>
                 </li>
@@ -207,17 +323,17 @@
                     </div>
                 </li>
                 <li>
-                    <button type="submit">注册</button>
+                    <button type="submit" class="submit-button">注册</button>
                 </li>
                 <li>
-                    <button type="reset" id="reset">重置</button>
+                    <button type="reset" id="reset" class="reset-button">重置</button>
                 </li>
             </ul>
         </form>
     </div>
     <script>
         function createErrorDom(inputDom, message) {
-            const parentDom = inputDom.parentElement
+            const parentDom = inputDom.type === "file" ? inputDom.parentElement.parentElement : inputDom.parentElement
             // 若是还没触发change事件，直接return
             if (!parentDom || ((inputDom.tagName === "INPUT" && inputDom.getAttribute("data-change") !== "true"))) return
             // 处理file错误内容发送改变
@@ -245,7 +361,7 @@
         }
 
         function removeErrorDom(inputDom) {
-            const parentDom = inputDom.parentElement
+            const parentDom = inputDom.type === "file" ? inputDom.parentElement.parentElement : inputDom.parentElement
             if (!parentDom) return
             const errorDom = parentDom.querySelector(".error")
             const marginBottomDom = parentDom.parentElement.parentElement && parentDom.parentElement.parentElement.querySelector(".margin-bottom")
@@ -257,7 +373,7 @@
     <script>
         // 临界情况  只要不触发change 默认都是正常的 【 聚焦保持绿色 失焦保持默认颜色】
         // 离开时 通过校验取消样式  不通过保持样式
-        const btnDom = document.querySelector("button")
+        const btnDom = document.querySelector(".submit-button")
         const formDom = document.querySelector("form")
         const fileDom = document.querySelector("input[type=file]")
         const imgDom = document.querySelector("img")
@@ -268,6 +384,42 @@
         const selectDom = document.querySelector("select")
         const loginIdDom = document.querySelector("input[name=loginId]")
         const loginPwdDom = document.querySelector("input[name=loginPwd]")
+        const avatar = document.querySelector(".avatar")
+        const uploadDom = document.querySelector(".avatar .select")
+        const resetImageButton = document.querySelector(".upload button")
+        // 重置图片
+        resetImageButton.onclick = function(e){
+            e.preventDefault()
+            avatar.className = "avatar select"
+            fileDom.value = ""
+        }
+        // 屏蔽默认行为，避免打开新窗口
+        // 拖拽交互事件
+        uploadDom.ondragenter = function (e) {
+            e.preventDefault()
+            this.classList.add("active")
+        }
+        // 移动
+        uploadDom.ondragover = function (e) {
+            e.preventDefault()
+        }
+        uploadDom.ondragleave = function (e) {
+            e.preventDefault()
+            this.classList.remove("active")
+        }
+        // 放手
+        uploadDom.ondrop = function (e) {
+            e.preventDefault()
+            this.classList.remove("active")
+            const types = e.dataTransfer.types
+            if (!types.includes("Files")) {
+                createErrorDom(fileDom, "仅支持文件上传")
+                return
+            }
+            const files = e.dataTransfer.files
+            fileDom.files = files
+            fileChangeHandler()
+        }
 
         btnDom.onclick = function (e) {
             e.preventDefault()
@@ -282,7 +434,7 @@
                 loginPwdDom.setAttribute("data-change", true)
                 createErrorDom(loginPwdDom, "密码必须为 123456")
             }
-            
+
             if (fileDom.value === "") {
                 fileDom.setAttribute("data-change", true)
                 createErrorDom(fileDom, "请选择文件")
@@ -310,7 +462,6 @@
             } else {
                 removeErrorDom(inputCheckBox)
             }
-
 
             const formData = new FormData(formDom)
             const json = {}
@@ -341,33 +492,39 @@
             removeErrorDom(inputCheckBox)
         }
 
+        uploadDom.onclick = function () {
+            fileDom.click()
+        }
+
         // file跟img基本不挂钩，需要解决的是file校验失败，img是如何处理的
-        
-        fileDom.onchange = function (e) {
-            const file = this.files[0]
-            this.setAttribute("data-change", true)
+
+        fileDom.onchange = fileChangeHandler
+        function fileChangeHandler() {
+            const file = fileDom.files[0]
+            fileDom.setAttribute("data-change", true)
             if (!file) {
-                createErrorDom(this, "请选择文件")
-                imgDom.src = "./logo.png"
+                createErrorDom(fileDom, "请选择文件")
                 return
             }
-            
+
             if (!["image/jpeg", "image/png"].includes(file.type)) {
-                createErrorDom(this, "不支持该文件类型")
-                imgDom.src = "./logo.png"
-                this.value = "";
+                createErrorDom(fileDom, "不支持该文件类型")
+                fileDom.value = "";
                 return
             }
-            
+
             if (file.size >= 1024 * 1024 * 2) {
-                createErrorDom(this, "文件不能超过2MB")
-                imgDom.src = "./logo.png"
-                this.value = "";
+                createErrorDom(fileDom, "文件不能超过2MB")
+                fileDom.value = "";
                 return
             }
-            removeErrorDom(this)
+            avatar.className = "avatar process"
+            removeErrorDom(fileDom)
             const fileReader = new FileReader()
             fileReader.onload = function () {
+                setTimeout(() => {
+                    avatar.className = "avatar upload"
+                }, 2000)
                 imgDom.src = this.result
             }
             fileReader.readAsDataURL(file)
